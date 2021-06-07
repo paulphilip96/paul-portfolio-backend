@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 //API
 //view table
 const getUsers = (request, response) => {
-	pool.query('SELECT * FROM ppdb', (error, results) => {
+	pool.query('SELECT * FROM ppdb ORDER BY score DESC', (error, results) => {
 		if (error) {
 			throw error;
 		}
@@ -21,15 +21,42 @@ const getUsers = (request, response) => {
 	})
 }
 
-//sort and get top5users
+//check duplicates
+const checkDuplicates = (request, response) => {
+	pool.query(`SELECT EXISTS(SELECT * FROM ppdb WHERE LOWER(name) = LOWER('${request.params.name}'))`, (error, results) => {
+		if (error) {
+			throw error
+		}
+		response.status(200).send(results.rows[0].exists)
+	})
+}
 
 //add user
+const addUser = (request, response) => {
+	const {name, score} = request.body;
+	pool.query('INSERT INTO ppdb (name, score) VALUES ($1, $2)', [name, score], (error) => {
+		if (error) {
+			response.status(200).json("failed")
+			throw error
+		}
+		response.status(201).json({status: "success", message: "User Added"})
+	})
+}
 
 //get user ranking
-//--sort and get placing serverside
+const getRank = (request, response) => {
+	pool.query(`SELECT rank.* FROM (SELECT id, name, score, RANK () OVER (ORDER BY score DESC) FROM ppdb) rank WHERE name = '${request.params.name}'`, (error, results) => {
+		if (error) {
+			throw error;
+		}
+		response.status(200).send(results.rows[0]);
+	})
+}
 
 //construct routes
 app.listen(3002, () => {
 	console.log('Server Listening');
 })
-app.route('/users').get(getUsers)
+app.route('/users').get(getUsers).post(addUser);
+app.route('/duplicate/:name').get(checkDuplicates);
+app.route('/rank/:name').get(getRank);
