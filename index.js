@@ -53,6 +53,16 @@ const getRank = (request, response) => {
 	})
 }
 
+//contact API
+const contact = (request, response) => {
+	pool.query('SELECT * FROM ppdb ORDER BY score DESC', (error, results) => {
+		if (error) {
+			throw error;
+		}
+		response.status(200).json("Test Success");
+	})
+}
+
 //construct routes
 app.listen(3002, () => {
 	console.log('Server Listening');
@@ -60,3 +70,4 @@ app.listen(3002, () => {
 app.route('/users').get(getUsers).post(addUser);
 app.route('/duplicate/:name').get(checkDuplicates);
 app.route('/rank/:name').get(getRank);
+app.route('/contact').get(contact);
