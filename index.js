@@ -5,6 +5,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 //server declaration
+const port = process.env.PORT || 3002;
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
@@ -64,7 +65,7 @@ const contact = (request, response) => {
 }
 
 //construct routes
-app.listen(3002, () => {
+app.listen(port, () => {
 	console.log('Server Listening');
 })
 app.route('/users').get(getUsers).post(addUser);
