@@ -3,6 +3,8 @@ const { pool } = require('./config');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+var nodemailer = require('nodemailer');
+var moment = require('moment');
 
 //server declaration
 const port = process.env.PORT || 3002;
@@ -54,14 +56,61 @@ const getRank = (request, response) => {
 	})
 }
 
-//contact API
+//email
+var transporter = nodemailer.createTransport({
+	service: 'gmail',
+	auth: {
+	  user: 'paulphiliperrors@gmail.com',
+	  pass: 'Lacasadapapel_777'
+	}
+});
+
+//get message
+const getContact = (request, response) => {
+	response.status(200).send("something");
+}
+
+//add message
 const contact = (request, response) => {
-	pool.query('SELECT * FROM ppdb ORDER BY score DESC', (error, results) => {
+	var {name, contact, message} = request.body;
+
+	if (!name.replace(/\s/g, "").length) {
+		name = "No Name Was Provided";
+	}
+
+	if (!message.replace(/\s/g, "").length) {
+		message = "No Message Was Provided";
+	}
+
+	if (!contact.replace(/\s/g, "").length) {
+		contact = "No Contact Information Was Provided";
+	}
+
+	var mailOptions = {
+		from: 'paulphiliperrors@gmail.com',
+		to: 'paulphilip290996@gmail.com',
+		subject: `Message from Contact Page on Website (pphilip.com)! Sent by ${name}`,
+		text: `Contact Information: ${contact}\n${message}.`
+	};
+
+	var mailOptionsError = {
+		from: 'paulphiliperrors@gmail.com',
+		to: 'paulphiliperrors@gmail.com',
+		subject: 'Error from email service: pphilip.com',
+		text: `Notifying error from email service: aerotrends-aviation.com. On: ${moment()}`
+	};
+
+	transporter.sendMail(mailOptions, function(error, info){
 		if (error) {
-			throw error;
+			console.log(error);
+			transporter_error.sendMail(mailOptionsError, function(error, info) {
+				console.log(info.response);
+			})
+		} else {
+			console.log('Email sent: ' + info.response);
 		}
-		response.status(200).json("Test Success");
-	})
+	});
+	response.status(201).json({status: "success", message: "Sent"});
 }
 
 //construct routes
@@ -71,4 +120,4 @@ app.listen(port, () => {
 app.route('/users').get(getUsers).post(addUser);
 app.route('/duplicate/:name').get(checkDuplicates);
 app.route('/rank/:name').get(getRank);
-app.route('/contact').get(contact);
+app.route('/message').get(getContact).post(contact);
