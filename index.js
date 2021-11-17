@@ -3,8 +3,7 @@ const { pool } = require('./config');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-var nodemailer = require('nodemailer');
-var moment = require('moment');
+const sgMail = require('@sendgrid/mail');
 
 //server declaration
 const port = process.env.PORT || 3002;
@@ -56,15 +55,6 @@ const getRank = (request, response) => {
 	})
 }
 
-//email
-var transporter = nodemailer.createTransport({
-	service: 'gmail',
-	auth: {
-	  user: 'paulphiliperrors@gmail.com',
-	  pass: 'Lacasadapapel_777'
-	}
-});
-
 //get message
 const getContact = (request, response) => {
 	response.status(200).send("something");
@@ -86,30 +76,23 @@ const contact = (request, response) => {
 		contact = "No Contact Information Was Provided";
 	}
 
-	var mailOptions = {
-		from: 'paulphiliperrors@gmail.com',
-		to: 'paulphilip290996@gmail.com',
-		subject: `Message from Contact Page on Website (pphilip.com)! Sent by ${name}`,
-		text: `Contact Information: ${contact}\n${message}.`
-	};
+	sgMail.setApiKey('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')
+	const msg = {
+		to: 'paulphilip290996@gmail.com, paulphiliperrors@gmail.com',
+		from: 'paulphilipportfolio@mail.com',
+		subject: 'Mesage from Contact Page on Website!',
+		text: `<p>Name of Sender: ${name}<p/><p>Contact Information: ${contact}<p/><p><strong>Message:</strong><br/>${message}</p>`,
+		html: `<p>Name of Sender: ${name}<p/><p>Contact Information: ${contact}<p/><p><strong>Message:</strong><br/>${message}</p>`,
+	}
 
-	var mailOptionsError = {
-		from: 'paulphiliperrors@gmail.com',
-		to: 'paulphiliperrors@gmail.com',
-		subject: 'Error from email service: pphilip.com',
-		text: `Notifying error from email service: aerotrends-aviation.com. On: ${moment()}`
-	};
-
-	transporter.sendMail(mailOptions, function(error, info){
-		if (error) {
-			console.log(error);
-			transporter_error.sendMail(mailOptionsError, function(error, info) {
-				console.log(info.response);
-			})
-		} else {
-			console.log('Email sent: ' + info.response);
-		}
-	});
+	sgMail
+		.send(msg)
+		.then(() => {
+			console.log('Email sent')
+		})
+		.catch((error) => {
+			console.error(error)
+	})
 	response.status(201).json({status: "success", message: "Sent"});
 }
 
