@@ -63,6 +63,7 @@ const getContact = (request, response) => {
 //add message
 const contact = (request, response) => {
 	var {name, contact, message} = request.body;
+	const emailList = ['paulphilip290996@gmail.com', 'paulphiliperrors@gmail.com'];
 
 	if (!name.replace(/\s/g, "").length) {
 		name = "No Name Was Provided";
@@ -78,7 +79,7 @@ const contact = (request, response) => {
 
 	sgMail.setApiKey('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')
 	const msg = {
-		to: 'paulphilip290996@gmail.com, paulphiliperrors@gmail.com',
+		to: emailList,
 		from: 'paulphilipportfolio@mail.com',
 		subject: 'Mesage from Contact Page on Website!',
 		text: `<p>Name of Sender: ${name}<p/><p>Contact Information: ${contact}<p/><p><strong>Message:</strong><br/>${message}</p>`,
