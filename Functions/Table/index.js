@@ -54,7 +54,6 @@ const checkDuplicates = (request, response) => {
 
 //Add user
 const addUser = (request, response) => {
-
 	const {name, score} = request.body;
 	const query = `INSERT INTO ${tableName} (name, score) VALUES ($1, $2)`
 	pool.query(query, [name, score], (error) => {
