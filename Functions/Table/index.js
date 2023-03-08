@@ -77,7 +77,7 @@ const addUser = (request, response) => {
 
 //Get user ranking
 const getRank = (request, response) => {
-	const query = `SELECT rank.* FROM (SELECT id, name, score, RANK () OVER (ORDER BY score DESC) FROM ppdb) rank WHERE name = '${request.params.name}'`
+	const query = `SELECT rank.* FROM (SELECT id, name, score, RANK () OVER (ORDER BY score DESC) FROM ${tableName}) rank WHERE name = '${request.params.name}'`
 	pool.query(query, (error, results) => {
 		if (error) {
 			const errorBlob = {
@@ -87,7 +87,7 @@ const getRank = (request, response) => {
 				query: query,
 				timestamp: getFormattedDate()
 			}
-			console.log("Error - addUser", error)
+			console.log("Error - getRank", error)
 			response.status(400).json([errorBlob])			
 		}
 		else response.status(200).json([results.rows[0]])
