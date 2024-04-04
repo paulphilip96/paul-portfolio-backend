@@ -14,7 +14,7 @@ const sendTimesheetEmail = (request, response) => {
 	console.log("req", request.body);
 
 	var {employeeId, timeIn, timeOut} = request.body;
-	const emailList = ['paulphilip290996@gmail.com', 'paul@pphilip.com'];
+	const emailList = ['paulphilip290996@gmail.com', 'paul@pphilip.com', 'ludwing@jupiterhouse.space'];
 
 	if (!employeeId.replace(/\s/g, "").length) {
 		employeeId = "No employee Id was provided.";
@@ -54,7 +54,7 @@ const sendTimesheetEmail = (request, response) => {
 	const msg = {
 		to: emailList,
 		from: 'paul@pphilip.com',
-		subject: 'Mesage from Contact Page on Website!',
+		subject: 'Timesheet Submission',
 		text: html,
 		html: html,
 	}
