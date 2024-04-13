@@ -3,10 +3,10 @@ const {
     getUsers,
     checkDuplicates,
     addUser,
-    getRank,
+    getRank
 } = require("./Functions/Table/index.js")
 const { sendMessage } = require("./Functions/Contact/index.js")
-const { sendTimesheetEmail, test } = require("./Functions/UltimateRoofingTemp/index.js")
+const { sendTimesheetEmail, hasValidLogin, test } = require("./Functions/UltimateRoofingTemp/index.js")
 
 //Server imports
 const express = require('express')
@@ -28,6 +28,9 @@ app.route('/users').get(getUsers).post(addUser)
 app.route('/duplicate/:name').get(checkDuplicates)
 app.route('/rank/:name').get(getRank)
 app.route('/message').post(sendMessage)
+
+//Ludwing
 app.route('/timesheet_email').post(sendTimesheetEmail)
+app.route('/login').post(hasValidLogin)
 app.route('/test').get(test)
         
