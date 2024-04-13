@@ -1,17 +1,16 @@
 const sgMail = require('@sendgrid/mail');
 require('dotenv').config();
 
+const { pool, pool_ludwing } = require('../../config.js')
 const { getFormattedDate } = require("../Helper/index.js")
 
 const sendTimesheetEmail = (request, response) => {
-	console.log("works");
 	let errorTemplate = {
 		error: "Send Email Error",
 		function: "sendMessage",
 		errorInfo: "",
 		timestamp: ""
 	}
-	console.log("req", request.body);
 
 	var {employeeId, timeIn, timeOut} = request.body;
 	const emailList = ['paulphilip290996@gmail.com', 'paul@pphilip.com', 'ludwing@jupiterhouse.space'];
@@ -76,8 +75,39 @@ const sendTimesheetEmail = (request, response) => {
 		})
 }
 
+const hasValidLogin = (request, response) => {
+	const tableName = "ultimate_roofing"
+	let errorTemplate = {
+		error: "Send Email Error",
+		function: "sendMessage",
+		errorInfo: "",
+		timestamp: ""
+	}
+	const { username, password } = request.body;
+
+	const query = `
+		SELECT * FROM ${tableName}
+		WHERE LOWER(email) = LOWER($1) AND password = $2;
+	`;
+
+	pool_ludwing.query(query, [username, password], (error, results) => {
+		if (error) {
+			const errorBlob = {
+				...errorTemplate, 
+				function: "hasValidLogin",
+				errorInfo: error,
+				query: query,
+				timestamp: getFormattedDate()
+			}
+			console.log("Error - hasValidLogin", error)
+			response.status(400).json([errorBlob])		
+		}
+		else response.status(200).json([results.rows[0]])
+	})
+}
+
 const test = (req, res) => {
   res.status(200).json("Success");
 }
 
-module.exports = { sendTimesheetEmail, test }
+module.exports = { sendTimesheetEmail, hasValidLogin, test }
