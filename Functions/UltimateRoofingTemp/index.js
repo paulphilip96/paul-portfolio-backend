@@ -86,7 +86,8 @@ const hasValidLogin = (request, response) => {
 	const { username, password } = request.body;
 
 	const query = `
-		SELECT * FROM ${tableName}
+		SELECT email, name, employee_id 
+		FROM ${tableName}
 		WHERE LOWER(email) = LOWER($1) AND password = $2;
 	`;
 
