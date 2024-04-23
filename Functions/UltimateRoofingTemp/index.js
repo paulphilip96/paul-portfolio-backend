@@ -4,14 +4,14 @@ require('dotenv').config();
 const { pool, pool_ludwing } = require('../../config.js')
 const { getFormattedDate } = require("../Helper/index.js")
 
-const sendTimesheetEmail = (request, response) => {
-	let errorTemplate = {
-		error: "Send Email Error",
-		function: "sendMessage",
-		errorInfo: "",
-		timestamp: ""
-	}
+let errorTemplate = {
+	error: "",
+	function: "",
+	errorInfo: "",
+	timestamp: ""
+}
 
+const sendTimesheetEmail = (request, response) => {
 	var {employeeId, timeIn, timeOut} = request.body;
 	const emailList = ['paulphilip290996@gmail.com', 'paul@pphilip.com', 'ludwing@jupiterhouse.space'];
 
@@ -77,12 +77,6 @@ const sendTimesheetEmail = (request, response) => {
 
 const hasValidLogin = (request, response) => {
 	const tableName = "ultimate_roofing"
-	let errorTemplate = {
-		error: "Send Email Error",
-		function: "sendMessage",
-		errorInfo: "",
-		timestamp: ""
-	}
 	const { username, password } = request.body;
 
 	const query = `
@@ -107,8 +101,48 @@ const hasValidLogin = (request, response) => {
 	})
 }
 
+const updateTimesheet = (request, response) => {
+	const { employeeId, jobNumber, message, expenses, clockInTime, clockOutTime, location } = request.body;
+	const timesheetInfo = {
+		employeeId,
+		jobNumber,
+		message,
+		expenses,
+		clockInTime,
+		clockOutTime,
+		location
+	}
+	const formattedTimesheetInfo = JSON.stringify(timesheetInfo);
+
+	const query = `
+		UPDATE ultimate_roofing
+		SET timesheet = jsonb_concat(timesheet, jsonb_build_array(CAST($1 AS json)))
+		WHERE employee_id = $2;
+	`;
+
+	pool_ludwing.query(query, [formattedTimesheetInfo, employeeId], (error) => {
+		if (error) {
+			const errorBlob = {
+				...errorTemplate, 
+				function: "updateTimesheet",
+				errorInfo: error,
+				query: query,
+				timestamp: getFormattedDate()
+			}
+			console.log("Error - updateTimesheet", error)
+			response.status(400).json([errorBlob])		
+		}
+		else response.status(200).json(["success"]);
+	})
+}
+
 const test = (req, res) => {
   res.status(200).json("Success");
 }
 
-module.exports = { sendTimesheetEmail, hasValidLogin, test }
+module.exports = { 
+	sendTimesheetEmail,
+	hasValidLogin, 
+	updateTimesheet,
+	test 
+}
