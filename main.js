@@ -6,7 +6,13 @@ const {
     getRank
 } = require("./Functions/Table/index.js")
 const { sendMessage } = require("./Functions/Contact/index.js")
-const { sendTimesheetEmail, hasValidLogin, updateTimesheet, test } = require("./Functions/UltimateRoofingTemp/index.js")
+const { 
+    sendTimesheetEmail, 
+    hasValidLogin, 
+    clockIn, 
+    clockOut,
+    test
+} = require("./Functions/UltimateRoofingTemp/index.js")
 
 //Server imports
 const express = require('express')
@@ -31,7 +37,8 @@ app.route('/message').post(sendMessage)
 
 //Ludwing
 app.route('/timesheet_email').post(sendTimesheetEmail)
-app.route('/timesheet_add').post(updateTimesheet)
+app.route('/clock_in').post(clockIn)
+app.route('/clock_out').post(clockOut)
 app.route('/login').post(hasValidLogin)
 app.route('/test').get(test)
         

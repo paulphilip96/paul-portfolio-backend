@@ -80,7 +80,7 @@ const hasValidLogin = (request, response) => {
 	const { username, password } = request.body;
 
 	const query = `
-		SELECT email, name, employee_id 
+		SELECT email, name, employee_id, clock_in_data, clock_out_data 
 		FROM ${tableName}
 		WHERE LOWER(email) = LOWER($1) AND password = $2;
 	`;
@@ -101,22 +101,20 @@ const hasValidLogin = (request, response) => {
 	})
 }
 
-const updateTimesheet = (request, response) => {
-	const { employeeId, jobNumber, message, expenses, clockInTime, clockOutTime, location } = request.body;
+const clockIn = (request, response) => {
+	const { employeeId, location, jobNumber, message, clockInTime,  } = request.body;
 	const timesheetInfo = {
 		employeeId,
+		location,
 		jobNumber,
 		message,
-		expenses,
-		clockInTime,
-		clockOutTime,
-		location
+		clockInTime
 	}
 	const formattedTimesheetInfo = JSON.stringify(timesheetInfo);
 
 	const query = `
 		UPDATE ultimate_roofing
-		SET timesheet = jsonb_concat(timesheet, jsonb_build_array(CAST($1 AS json)))
+		SET clock_in_data = jsonb_concat(clock_in_data, jsonb_build_array(CAST($1 AS json)))
 		WHERE employee_id = $2;
 	`;
 
@@ -124,7 +122,40 @@ const updateTimesheet = (request, response) => {
 		if (error) {
 			const errorBlob = {
 				...errorTemplate, 
-				function: "updateTimesheet",
+				function: "clockIn",
+				errorInfo: error,
+				query: query,
+				timestamp: getFormattedDate()
+			}
+			console.log("Error - updateTimesheet", error)
+			response.status(400).json([errorBlob])		
+		}
+		else response.status(200).json(["success"]);
+	})
+}
+
+const clockOut = (request, response) => {
+	const { employeeId, location, clockOutTime, expenses, expensesInfo } = request.body
+	const timesheetInfo = {
+		employeeId,
+		location,
+		expenses,
+		expensesInfo,
+		clockOutTime,
+	}
+	const formattedTimesheetInfo = JSON.stringify(timesheetInfo);
+
+	const query = `
+		UPDATE ultimate_roofing
+		SET clock_out_data = jsonb_concat(clock_out_data, jsonb_build_array(CAST($1 AS json)))
+		WHERE employee_id = $2;
+	`;
+
+	pool_ludwing.query(query, [formattedTimesheetInfo, employeeId], (error) => {
+		if (error) {
+			const errorBlob = {
+				...errorTemplate, 
+				function: "clockOut",
 				errorInfo: error,
 				query: query,
 				timestamp: getFormattedDate()
@@ -143,6 +174,7 @@ const test = (req, res) => {
 module.exports = { 
 	sendTimesheetEmail,
 	hasValidLogin, 
-	updateTimesheet,
+	clockIn,
+	clockOut,
 	test 
 }
