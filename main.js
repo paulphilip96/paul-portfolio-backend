@@ -7,7 +7,8 @@ const {
 } = require("./Functions/Table/index.js")
 const { sendMessage } = require("./Functions/Contact/index.js")
 const { 
-    sendTimesheetEmail, 
+    sendClockInEmail,
+    sendClockOutEmail, 
     hasValidLogin, 
     clockIn, 
     clockOut,
@@ -36,7 +37,8 @@ app.route('/rank/:name').get(getRank)
 app.route('/message').post(sendMessage)
 
 //Ludwing
-app.route('/timesheet_email').post(sendTimesheetEmail)
+app.route('/clock_in_email').post(sendClockInEmail)
+app.route('/clock_out_email').post(sendClockOutEmail)
 app.route('/clock_in').post(clockIn)
 app.route('/clock_out').post(clockOut)
 app.route('/login').post(hasValidLogin)
