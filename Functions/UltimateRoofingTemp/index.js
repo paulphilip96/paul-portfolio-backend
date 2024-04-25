@@ -199,6 +199,11 @@ const clockIn = (request, response) => {
 		WHERE employee_id = $2;
 	`;
 
+	const query_second = `
+		SELECT clock_in_data FROM ultimate_roofing
+		WHERE employee_id = $1
+	`
+
 	pool_ludwing.query(query, [formattedTimesheetInfo, employeeId], (error) => {
 		if (error) {
 			const errorBlob = {
@@ -208,10 +213,24 @@ const clockIn = (request, response) => {
 				query: query,
 				timestamp: getFormattedDate()
 			}
-			console.log("Error - updateTimesheet", error)
+			console.log("Error - clockIn", error)
 			response.status(400).json([errorBlob])		
 		}
-		else response.status(200).json(["success"]);
+	})
+
+	pool_ludwing.query(query_second, [employeeId], (error, results) => {
+		if (error) {
+			const errorBlob = {
+				...errorTemplate, 
+				function: "clockIn-second-query",
+				errorInfo: error,
+				query: query,
+				timestamp: getFormattedDate()
+			}
+			console.log("Error - clockIn", error)
+			response.status(400).json([errorBlob])		
+		}
+		else response.status(200).json([results.rows[0]])
 	})
 }
 
@@ -232,6 +251,11 @@ const clockOut = (request, response) => {
 		WHERE employee_id = $2;
 	`;
 
+	const query_second = `
+		SELECT clock_out_data FROM ultimate_roofing
+		WHERE employee_id = $1
+	`
+
 	pool_ludwing.query(query, [formattedTimesheetInfo, employeeId], (error) => {
 		if (error) {
 			const errorBlob = {
@@ -241,10 +265,24 @@ const clockOut = (request, response) => {
 				query: query,
 				timestamp: getFormattedDate()
 			}
-			console.log("Error - updateTimesheet", error)
+			console.log("Error - clockOut", error)
 			response.status(400).json([errorBlob])		
 		}
-		else response.status(200).json(["success"]);
+	})
+
+	pool_ludwing.query(query_second, [employeeId], (error, results) => {
+		if (error) {
+			const errorBlob = {
+				...errorTemplate, 
+				function: "clockIn-second-query",
+				errorInfo: error,
+				query: query,
+				timestamp: getFormattedDate()
+			}
+			console.log("Error - clockOut", error)
+			response.status(400).json([errorBlob])		
+		}
+		else response.status(200).json([results.rows[0]])
 	})
 }
 
