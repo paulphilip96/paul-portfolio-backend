@@ -14,6 +14,14 @@ const {
     clockOut,
     test
 } = require("./Functions/UltimateRoofingTemp/index.js")
+const { 
+    sendClockInEmailE,
+    sendClockOutEmailE, 
+    hasValidLoginE, 
+    clockInE, 
+    clockOutE,
+    testE
+} = require("./Functions/UltimateRoofingEmployeesTemp/index.js")
 
 //Server imports
 const express = require('express')
@@ -43,4 +51,10 @@ app.route('/clock_in').post(clockIn)
 app.route('/clock_out').post(clockOut)
 app.route('/login').post(hasValidLogin)
 app.route('/test').get(test)
-        
+
+app.route('/clock_in_email_e').post(sendClockInEmailE)
+app.route('/clock_out_email_e').post(sendClockOutEmailE)
+app.route('/clock_in_e').post(clockInE)
+app.route('/clock_out_e').post(clockOutE)
+app.route('/login_e').post(hasValidLoginE)
+app.route('/test_e').get(testE)
