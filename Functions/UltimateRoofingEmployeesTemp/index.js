@@ -161,7 +161,7 @@ const hasValidLoginE = (request, response) => {
 	const { username, password } = request.body;
 
 	const query = `
-		SELECT email, name, employee_id, clock_in_data, clock_out_data 
+		SELECT email, name, employee_id, clock_in_data, clock_out_data, admin 
 		FROM ${tableName}
 		WHERE LOWER(email) = LOWER($1) AND password = $2;
 	`;
