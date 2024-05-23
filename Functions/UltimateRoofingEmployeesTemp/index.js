@@ -156,6 +156,30 @@ const sendClockOutEmailE = (request, response) => {
 		})
 }
 
+const getAllDataE = (request, response) => {
+	const tableName = "ultimate_roofing_employees"
+
+	const query = `
+		SELECT email, name, employee_id, clock_in_data, clock_out_data 
+		FROM ${tableName};
+	`;
+
+	pool_ludwing.query(query, (error, results) => {
+		if (error) {
+			const errorBlob = {
+				...errorTemplate, 
+				function: "getAllData",
+				errorInfo: error,
+				query: query,
+				timestamp: getFormattedDate()
+			}
+			console.log("Error - getAllData", error)
+			response.status(400).json([errorBlob])		
+		}
+		else response.status(200).json([results.rows])
+	})
+}
+
 const hasValidLoginE = (request, response) => {
 	const tableName = "ultimate_roofing_employees"
 	const { username, password } = request.body;
@@ -296,5 +320,6 @@ module.exports = {
 	hasValidLoginE, 
 	clockInE,
 	clockOutE,
+	getAllDataE,
 	testE 
 }
