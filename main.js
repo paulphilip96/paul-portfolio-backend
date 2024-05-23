@@ -20,7 +20,8 @@ const {
     hasValidLoginE, 
     clockInE, 
     clockOutE,
-    testE
+    testE,
+    getAllDataE
 } = require("./Functions/UltimateRoofingEmployeesTemp/index.js")
 
 //Server imports
@@ -57,4 +58,5 @@ app.route('/clock_out_email_e').post(sendClockOutEmailE)
 app.route('/clock_in_e').post(clockInE)
 app.route('/clock_out_e').post(clockOutE)
 app.route('/login_e').post(hasValidLoginE)
+app.route('/all_data_e').get(getAllDataE)
 app.route('/test_e').get(testE)
