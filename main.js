@@ -23,6 +23,13 @@ const {
     testE,
     getAllDataE
 } = require("./Functions/UltimateRoofingEmployeesTemp/index.js")
+const { 
+    clockInTemp,
+    clockOutTemp,
+    getAllDataTemp,
+    hasValidLoginTemp,
+    testTemp
+} = require("./Functions/UltimateRoofingReal/index.js")
 
 //Server imports
 const express = require('express')
@@ -60,3 +67,10 @@ app.route('/clock_out_e').post(clockOutE)
 app.route('/login_e').post(hasValidLoginE)
 app.route('/all_data_e').get(getAllDataE)
 app.route('/test_e').get(testE)
+
+//Temp
+app.route('/all_data_temp').get(getAllDataTemp)
+app.route('/clock_in_temp').post(clockInTemp)
+app.route('/clock_out_temp').post(clockOutTemp)
+app.route('/login_temp').post(hasValidLoginTemp)
+app.route('/test_temp').get(testTemp)
