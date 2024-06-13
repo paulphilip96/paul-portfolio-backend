@@ -5,6 +5,7 @@ const { Pool } = require('pg');
 const isProduction = process.env.NODE_ENV === 'production'
 const connectionString = `postgres://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`;
 const connectionStringLudwing = `postgres://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE_LUDWING}`;
+const connectionStringTemp = `postgres://${process.env.DB_USER_TEMP}:${process.env.DB_PASSWORD_TEMP}@${process.env.DB_HOST_TEMP}:${process.env.DB_PORT_TEMP}/${process.env.DB_DATABASE_TEMP}`;
 
 const pool = new Pool({
   connectionString,
@@ -22,4 +23,12 @@ const pool_ludwing = new Pool({
   }
 });
 
-module.exports = { pool, pool_ludwing }
+const pool_temp = new Pool({
+  connectionString: connectionStringTemp,
+  ssl: {
+    isProduction,
+    rejectUnauthorized: false   
+  }
+});
+
+module.exports = { pool, pool_ludwing, pool_temp }
