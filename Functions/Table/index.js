@@ -1,102 +1,119 @@
-//Database imports
 const { pool } = require('../../config.js')
-
-//Function imports
 const { getFormattedDate } = require('../Helper/index.js')
+
 
 //General
 const tableName = "typing_test_high_scores"
-let errorTemplate = {
-	error: "Database Error",
-	function: "",
-	errorInfo: "",
-	query: "",
-	timestamp: ""
-}
 
 //View table
-const getUsers = (request, response) => {
+const getUsers = (_request, response) => {
 	const query = `SELECT * FROM ${tableName} ORDER BY score DESC`
 	pool.query(query, (error, results) => {
 		if (error) {
 			const errorBlob = {
-				...errorTemplate, 
-				function: "getUsers",
+				function: "getUsers()",
 				errorInfo: error,
 				query: query,
 				timestamp: getFormattedDate()
 			}
-			console.log("Error - getUsers", error)
-			response.status(400).json([errorBlob])
+			console.log("Error - getUsers()", errorBlob)
+			return response.status(400).json(errorBlob);
 		}
-		else response.status(200).json([results.rows])
-	})
-}
-
-//Check duplicates
-const checkDuplicates = (request, response) => {
-	const query = `SELECT EXISTS(SELECT * FROM ${tableName} WHERE LOWER(name) = LOWER('${request.params.name}'))`
-	pool.query(query, (error, results) => {
-		if (error) {
-			const errorBlob = {
-				...errorTemplate, 
-				function: "checkDuplicates",
-				errorInfo: error,
-				query: query,
-				timestamp: getFormattedDate()
-			}
-			console.log("Error - checkDuplicates", error)
-			response.status(400).json([errorBlob])		
-		}
-		else response.status(200).json([results.rows[0].exists])
+		else return response.status(200).json({ message: "High scores retrieved successfully", data: results.rows })
 	})
 }
 
 //Add user
+// Add user with duplicate check
 const addUser = (request, response) => {
-	const {name, score} = request.body;
-	const query = `INSERT INTO ${tableName} (name, score) VALUES ($1, $2)`
-	pool.query(query, [name, score], (error) => {
-		if (error) {
+	const { name, score } = request.body;
+
+	// Step 1: Check if user already exists
+	const checkQuery = `SELECT EXISTS(SELECT 1 FROM ${tableName} WHERE LOWER(name) = LOWER($1))`;
+
+	pool.query(checkQuery, [name], (checkError, checkResults) => {
+		if (checkError) {
 			const errorBlob = {
-				...errorTemplate, 
-				function: "addUser",
-				errorInfo: error,
-				query: query,
+				function: "addUser() - check duplicates",
+				errorInfo: checkError,
+				query: checkQuery,
 				timestamp: getFormattedDate()
+			};
+			console.log("Error - addUser() [check duplicates]", errorBlob);
+			return response.status(400).json(errorBlob);
+		}
+
+		// If user already exists, return 409 Conflict
+		if (checkResults.rows[0].exists) {
+			return response.status(409).json({
+				message: `User '${name}' already exists`
+			});
+		}
+
+		// Step 2: Insert new user
+		const insertQuery = `INSERT INTO ${tableName} (name, score) VALUES ($1, $2)`;
+		pool.query(insertQuery, [name, score], (insertError) => {
+			if (insertError) {
+				const errorBlob = {
+					function: "addUser() - insert",
+					errorInfo: insertError,
+					query: insertQuery,
+					timestamp: getFormattedDate()
+				};
+				console.log("Error - addUser() [insert]", errorBlob);
+				return response.status(400).json(errorBlob);
 			}
-			console.log("Error - addUser", error)
-			response.status(400).json([errorBlob])	
-		}
-		else {
-			const responseBlob = { message: "User Added"}
-			response.status(201).json([responseBlob])
-		}
-	})
-}
+
+			// Success
+			return response
+				.status(201)
+				.json({ message: "User successfully added" });
+		});
+	});
+};
+
 
 //Get user ranking
 const getRank = (request, response) => {
-	const query = `SELECT rank.* FROM (SELECT id, name, score, RANK () OVER (ORDER BY score DESC) FROM ${tableName}) rank WHERE name = '${request.params.name}'`
+	const query = `
+		SELECT rank.*
+		FROM (
+			SELECT id, name, score, RANK() OVER (ORDER BY score DESC)
+			FROM ${tableName}
+		) rank
+		WHERE name = '${request.params.name}'
+	`;
+
 	pool.query(query, (error, results) => {
 		if (error) {
 			const errorBlob = {
-				...errorTemplate, 
-				function: "getRank",
+				function: "getRank()",
 				errorInfo: error,
 				query: query,
 				timestamp: getFormattedDate()
-			}
-			console.log("Error - getRank", error)
-			response.status(400).json([errorBlob])			
+			};
+			console.log("Error - getRank()", errorBlob);
+			return response.status(400).json({ errorBlob });
 		}
-		else response.status(200).json([results.rows[0]])
-	})
-}
+
+		// No matching user found
+		if (results.rows.length === 0) {
+			return response.status(404).json({
+				message: `User '${request.params.name}' not found`
+			});
+		}
+
+		// User found
+		return response.status(200).json({
+			message: "User rank retrieved successfully",
+			data: results.rows[0]
+		});
+	});
+};
+
 
 module.exports = {
-    getUsers,
-    checkDuplicates,
-    addUser,
-    getRank,
+	getUsers,
+	addUser,
+	getRank
 }

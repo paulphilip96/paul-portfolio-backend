@@ -1,10 +1,5 @@
 //Function imports
-const {
-    getUsers,
-    checkDuplicates,
-    addUser,
-    getRank
-} = require("./Functions/Table/index.js")
+const { getUsers, addUser, getRank } = require("./Functions/Table/index.js")
 const { sendMessage } = require("./Functions/Contact/index.js")
 
 //Server imports
@@ -24,6 +19,5 @@ app.listen(port, () => {
 	console.log(`PAUL PORTFOLIO BACKEND - PORT - ${port}`)
 })
 app.route('/users').get(getUsers).post(addUser)
-app.route('/duplicate/:name').get(checkDuplicates)
 app.route('/rank/:name').get(getRank)
 app.route('/message').post(sendMessage)
