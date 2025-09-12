@@ -1,7 +1,6 @@
 //General imports
 const sgMail = require('@sendgrid/mail')
 const { getFormattedDate } = require('../Helper/index.js')
-require('dotenv').config();
 
 //add message
 const sendMessage = (request, response) => {
@@ -13,8 +12,8 @@ const sendMessage = (request, response) => {
 	}
 
 	var {name, contact, message} = request.body;
-	const emailList = ['paulphilip290996@gmail.com', 'paul@pphilip.com'];
-	const responseEmailList = [contact, 'paulphilip290996@gmail.com', 'paul@pphilip.com'];
+	const emailList = ['paul@pphilip.com'];
+	const responseEmailList = [contact, 'paul@pphilip.com'];
 
 	if (!name.replace(/\s/g, "").length) {
 		name = "No Name Was Provided";
@@ -29,6 +28,7 @@ const sendMessage = (request, response) => {
 	}
 
 	sgMail.setApiKey(process.env.SG_MAIL_API_KEY)
+	console.log("a", process.env.SG_MAIL_API_KEY)
 
 	const html = 
 	`
@@ -94,33 +94,29 @@ const sendMessage = (request, response) => {
 	sgMail
 		.send(msg)
 		.then(() => {
-			console.log('Email sent')
-			response.status(200).json([`Message Sent on ${getFormattedDate()}`]);
+			return response.status(201).json({ message: "Message sent successfully" });
 		})
 		.catch((error) => {
 			const errorBlob = {
-				...errorTemplate,
 				errorInfo: error,
 				timestamp: getFormattedDate()
 			}
 			console.error(errorBlob)
-			response.status(400).json([errorBlob])
+			return response.status(400).json(errorBlob)
 		})
 
 	sgMail
 		.send(confirm_msg)
 		.then(() => {
-			console.log('Reply Email sent')
-			response.status(200).json([`Message Sent on ${getFormattedDate()}`]);
+			return response.status(201).json({ message: "Response sent successfully" });
 		})
 		.catch((error) => {
 			const errorBlob = {
-				...errorTemplate,
 				errorInfo: error,
 				timestamp: getFormattedDate()
 			}
 			console.error(errorBlob)
-			response.status(400).json([errorBlob])
+			response.status(400).json(errorBlob)
 		})
 }
 
