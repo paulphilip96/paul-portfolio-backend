@@ -1,6 +1,6 @@
 //Function imports
 const { getUsers, addUser, getRank } = require("./Functions/Table/index.js")
-const { sendMessage } = require("./Functions/Contact/index.js")
+const { sendEmail } = require("./Functions/Contact/index.js")
 
 //Server imports
 const express = require('express')
@@ -20,4 +20,4 @@ app.listen(port, () => {
 })
 app.route('/users').get(getUsers).post(addUser)
 app.route('/rank/:name').get(getRank)
-app.route('/message').post(sendMessage)
+app.route('/message').post(sendEmail)
