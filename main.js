@@ -1,6 +1,7 @@
 //Function imports
 const { getUsers, addUser, getRank } = require("./Functions/Table/index.js")
 const { sendEmail } = require("./Functions/Contact/index.js")
+const { getHolidays } = require("./Functions/Holiday/index.js")
 
 //Server imports
 const express = require('express')
@@ -21,3 +22,4 @@ app.listen(port, () => {
 app.route('/users').get(getUsers).post(addUser)
 app.route('/rank/:name').get(getRank)
 app.route('/message').post(sendEmail)
+app.route('/holidays/:country').get(getHolidays)
