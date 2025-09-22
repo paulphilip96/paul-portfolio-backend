@@ -1,11 +1,7 @@
 //Function imports
-const {
-    getUsers,
-    checkDuplicates,
-    addUser,
-    getRank
-} = require("./Functions/Table/index.js")
-const { sendMessage } = require("./Functions/Contact/index.js")
+const { getUsers, addUser, getRank } = require("./Functions/Table/index.js")
+const { sendEmail } = require("./Functions/Contact/index.js")
+const { getHolidays } = require("./Functions/Holiday/index.js")
 
 //Server imports
 const express = require('express')
@@ -24,6 +20,6 @@ app.listen(port, () => {
 	console.log(`PAUL PORTFOLIO BACKEND - PORT - ${port}`)
 })
 app.route('/users').get(getUsers).post(addUser)
-app.route('/duplicate/:name').get(checkDuplicates)
 app.route('/rank/:name').get(getRank)
-app.route('/message').post(sendMessage)
+app.route('/message').post(sendEmail)
+app.route('/holidays/:country').get(getHolidays)
