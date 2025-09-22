@@ -1,8 +1,12 @@
 const request = require("request");
+const moment = require("moment");
+
 const { getFormattedDate } = require("../Helper");
 
+
 const getHolidays = (req, response) => {
-  const requestString = `${process.env.CALENDERIFIC_URL}?api_key=${process.env.CALENDERIFIC_API_KEY}&country=${req.params.country}&year=2025`;
+  const currentYear = moment().year();
+  const requestString = `${process.env.CALENDERIFIC_URL}?api_key=${process.env.CALENDERIFIC_API_KEY}&country=${req.params.country}&year=${currentYear.toString()}`;
 
   request(requestString, { json: true }, (error, res, body) => {
     if (error) {
