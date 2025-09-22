@@ -30,8 +30,7 @@ const getHolidays = (req, response) => {
         date: holiday.date.iso,
         type: holiday.type,
       }));
-
-    console.log(all)
+      
     return response.status(200).json({ message: "Holidays retrieved successfully", data: all });
   });
 };
