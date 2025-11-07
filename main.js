@@ -2,6 +2,7 @@
 const { getUsers, addUser, getRank } = require("./Functions/Table/index.js")
 const { sendEmail } = require("./Functions/Contact/index.js")
 const { getHolidays } = require("./Functions/Holiday/index.js")
+const { sendEmailSMS } = require("./Functions/Contact/sms.js")
 
 //Server imports
 const express = require('express')
@@ -23,3 +24,4 @@ app.route('/users').get(getUsers).post(addUser)
 app.route('/rank/:name').get(getRank)
 app.route('/message').post(sendEmail)
 app.route('/holidays/:country').get(getHolidays)
+app.route('/smsMessage').post(sendEmailSMS)

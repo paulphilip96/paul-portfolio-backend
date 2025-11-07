@@ -68,25 +68,4 @@ const sendEmail = async (request, response) => {
   }
 };
 
-// const sendEmail = async (request, response) => {
-//   const mailgun = new Mailgun(FormData);
-//   const mg = mailgun.client({
-//     username: "api",
-//     key: process.env.MAILGUN_API_KEY || "API_KEY",
-//   });
-//   try {
-//     const data = await mg.messages.create(process.env.MAILGUN_PROD_URL, {
-//       from: "Mailgun Sandbox <postmaster@mg.pphilip.com>",
-//       to: ["Paul Philip <paul@pphilip.com>"],
-//       subject: "Hello Paul Philip",
-//       text: "Congratulations Paul Philip, you just sent an email with Mailgun! You are truly awesome!",
-//     });
-
-//     console.log(data); // logs response data
-//   } catch (error) {
-//     console.log(error); //logs any error
-//   }
-// };
-
-
 module.exports = { sendEmail };
