@@ -14,7 +14,7 @@ const sendEmailSMS = async (request, response) => {
     message,
   } = request.body;
 
-  // const emailList = ['SMS Corporate Services <smscorporate1989@gmail.com>'];
+  //const emailList = ['SMS Corporate Services <smscorporate1989@gmail.com>'];
   const emailList = ["Paul Philip <paul@pphilip.com>"];
 
   const mailgun = new Mailgun(FormData);
@@ -89,7 +89,7 @@ const sendEmailSMS = async (request, response) => {
 
   try {
     await mg.messages.create(process.env.MAILGUN_PROD_URL, {
-      from: `Paul Philip <postmaster@${process.env.MAILGUN_PROD_URL}>`,
+      from: `SMSCS <postmaster@${process.env.MAILGUN_PROD_URL}>`,
       to: emailList,
       subject: "Contact Page - Message Received",
       text: contactReceivedText,
