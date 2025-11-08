@@ -14,8 +14,8 @@ const sendEmailSMS = async (request, response) => {
     message,
   } = request.body;
 
-  //const emailList = ['SMS Corporate Services <smscorporate1989@gmail.com>'];
-  const emailList = ["Paul Philip <paul@pphilip.com>"];
+  const emailList = ['SMS Corporate Services <smscorporate1989@gmail.com>'];
+  // const emailList = ["Paul Philip <paul@pphilip.com>"];
 
   const mailgun = new Mailgun(FormData);
   const mg = mailgun.client({
